@@ -5,7 +5,8 @@ import pytz
 from flask import Flask
 import logging
 import time
-import argparse
+import os
+from threading import Thread
 from alpaca_trade_api import Stream
 from alpaca_trade_api.common import URL
 from alpaca_trade_api.rest import TimeFrame
@@ -386,23 +387,23 @@ def main():
 
 def create_app():
     app = Flask(__name__)
-    fmt = (
-        '%(asctime)s | %(name)s | %(levelname)s | '
-        '%(message)s'
-    )
-    
-    # Configure basic logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format=fmt,
-        handlers=[
-            logging.FileHandler('console.log'),
-            logging.StreamHandler()  # This will print to console as well
-        ]
-    )
-    main()
+
+    @app.route('/')
+    def home():
+        return "Trading algorithm is running!"
+
+    # Start the trading logic in a background thread
+    thread = Thread(target=main)
+    thread.daemon = True
+    thread.start()
+
     return app
 
+
+if __name__ == "__main__":
+    # Get the port from the environment (Render.com sets this automatically)
+    port = int(os.environ.get("PORT", 3001))  # Default to 3001 if PORT is not set
+    app = create_app() 
+    app.run(host="0.0.0.0", port=port, debug=True)
+
 app = create_app()
-app.run(host="0.0.0.0", port=3001, debug=True)
-    
