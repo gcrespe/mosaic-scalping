@@ -5,15 +5,15 @@ import pytz
 from flask import Flask
 import logging
 import time
-import argparse
+from threading import Thread
 from alpaca_trade_api import Stream
 from alpaca_trade_api.common import URL
 from alpaca_trade_api.rest import TimeFrame
 
 logger = logging.getLogger()
 
-ALPACA_API_KEY = "PKF0Y208Z66P4NNP43M7"
-ALPACA_SECRET_KEY = "ynClFOZkbg4LX2G7IefA36JJZdo35E4eDASPTlEz"
+ALPACA_API_KEY = "PKOLUJGVUDMRGQXDVB6V"
+ALPACA_SECRET_KEY = "0ZzH9AmDGk2OYjdEuaIyBW3g4cieUxIwKfeUvyON"
 
 def setup_logging():
     fmt = (
@@ -404,4 +404,6 @@ def create_app():
     return app
 
 app = create_app()
-app.run(host="0.0.0.0", port=3001, debug=True)    
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3001, debug=True)
