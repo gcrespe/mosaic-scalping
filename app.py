@@ -15,6 +15,14 @@ logger = logging.getLogger()
 ALPACA_API_KEY = "PKOLUJGVUDMRGQXDVB6V"
 ALPACA_SECRET_KEY = "0ZzH9AmDGk2OYjdEuaIyBW3g4cieUxIwKfeUvyON"
 
+stream = Stream(ALPACA_API_KEY,
+                ALPACA_SECRET_KEY,
+                base_url=URL('https://paper-api.alpaca.markets'),
+                data_feed='iex')  # <- replace to sip for PRO subscription
+api = alpaca.REST(key_id=ALPACA_API_KEY,
+                secret_key=ALPACA_SECRET_KEY,
+                base_url="https://paper-api.alpaca.markets")
+
 def setup_logging():
     fmt = (
         '\n%(asctime)s | %(name)s | %(levelname)s\n'
@@ -22,16 +30,16 @@ def setup_logging():
         '    Event: %(event)s\n'
         '    Details: %(message)s\n'
     )
-    
     logging.basicConfig(
         level=logging.INFO,
         format=fmt,
         handlers=[
             logging.FileHandler('console.log'),
-            logging.StreamHandler()  # Also print to console
+            logging.StreamHandler()
         ]
     )
-    return logging.getLogger()
+    global logger  # Ensure the logger is global for all threads
+    logger = logging.getLogger()
 
 
 class ScalpAlgo:
@@ -303,16 +311,7 @@ class ScalpAlgo:
         self._l.info(f'transition from {self._state} to {new_state}')
         self._state = new_state
 
-
 def main():
-    stream = Stream(ALPACA_API_KEY,
-                    ALPACA_SECRET_KEY,
-                    base_url=URL('https://paper-api.alpaca.markets'),
-                    data_feed='iex')  # <- replace to sip for PRO subscription
-    api = alpaca.REST(key_id=ALPACA_API_KEY,
-                    secret_key=ALPACA_SECRET_KEY,
-                    base_url="https://paper-api.alpaca.markets")
-
     fleet = {}
     symbols = ['AAPL', 'TLSA', 'QQQ']
     for symbol in symbols:
@@ -400,9 +399,20 @@ def create_app():
             logging.StreamHandler()  # This will print to console as well
         ]
     )
-    main()
+
+    @app.route('/')
+    def home():
+        return "Trading algorithm is running!"
+
+    # Start the trading logic in a background thread
+    thread = Thread(target=main)
+    thread.daemon = True
+    thread.start()
+
     return app
 
+
+# Expose the app instance for waitress-serve
 app = create_app()
 
 if __name__ == "__main__":
