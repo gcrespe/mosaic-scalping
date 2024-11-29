@@ -12,8 +12,8 @@ from alpaca_trade_api.rest import TimeFrame
 
 logger = logging.getLogger()
 
-ALPACA_API_KEY = "PK4F4A4BUEH3XU9IJBL7"
-ALPACA_SECRET_KEY = "Gb4FmfYfo03jnK66IeebnzI6mosJNxSgPq6LoI7n"
+ALPACA_API_KEY = "PKF0Y208Z66P4NNP43M7"
+ALPACA_SECRET_KEY = "ynClFOZkbg4LX2G7IefA36JJZdo35E4eDASPTlEz"
 
 def setup_logging():
     fmt = (
@@ -402,10 +402,6 @@ def create_app():
     )
     main()
     return app
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=3001, debug=True)
 
 app = create_app()
 app.run(host="0.0.0.0", port=3001, debug=True)    
