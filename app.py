@@ -384,7 +384,6 @@ def main():
         loop.close()
 
 def create_app():
-    app = Flask(__name__)
     fmt = (
         '%(asctime)s | %(name)s | %(levelname)s | '
         '%(message)s'
@@ -400,20 +399,7 @@ def create_app():
         ]
     )
 
-    @app.route('/')
-    def home():
-        return "Trading algorithm is running!"
+    main()
 
-    # Start the trading logic in a background thread
-    thread = Thread(target=main)
-    thread.daemon = True
-    thread.start()
-
-    return app
-
-
-# Expose the app instance for waitress-serve
 app = create_app()
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3001, debug=True)
+app.run(host="0.0.0.0", port=3001, debug=True)    
